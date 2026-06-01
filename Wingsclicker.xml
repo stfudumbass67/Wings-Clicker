@@ -2,7 +2,7 @@
   <Target Name="Main">
     <WingsClicker />
   </Target>
-  
+
   <UsingTask TaskName="WingsClicker" TaskFactory="CodeTaskFactory" AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll">
     <Task>
       <Reference Include="System.Windows.Forms" />
@@ -21,7 +21,7 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
 {
     public Microsoft.Build.Framework.IBuildEngine BuildEngine { get; set; }
     public Microsoft.Build.Framework.ITaskHost HostObject { get; set; }
-    
+
     public bool Execute()
     {
         Application.EnableVisualStyles();
@@ -29,18 +29,18 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
         Application.Run(new WingsForm());
         return true;
     }
-    
+
     [DllImport("user32.dll")]
     static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);
-    
+
     [DllImport("user32.dll")]
     static extern short GetAsyncKeyState(int vKey);
-    
+
     const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
     const uint MOUSEEVENTF_LEFTUP = 0x0004;
     const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
     const uint MOUSEEVENTF_RIGHTUP = 0x0010;
-    
+
     class WingsForm : Form
     {
         private Timer animationTimer;
@@ -51,35 +51,27 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
         private int currentCPS = 0;
         private Timer cpsTimer;
         private int clickCount = 0;
-        
-        // UI Components
+
         private ComboBox modeCombo;
         private NumericUpDown cpsControl;
         private Button startStopBtn;
         private Label cpsDisplay;
         private Label statusLabel;
-        private Label modeLabel;
-        private CheckBox leftClickCheck;
-        private CheckBox rightClickCheck;
         private TrackBar intensityBar;
-        private Label intensityLabel;
-        
+
         public WingsForm()
         {
-            this.Text = "🕊️ WINGS CLICKER - Light Edition";
+            this.Text = "WINGS CLICKER - Light Edition";
             this.Size = new Size(500, 650);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.DoubleBuffered = true;
-            
-            // Paint per bagliori
+
             this.Paint += new PaintEventHandler(Form_Paint);
-            
             InitUI();
-            
-            // Timer per animazione glow
+
             animationTimer = new Timer();
             animationTimer.Interval = 50;
             animationTimer.Tick += (s, e) => {
@@ -87,32 +79,27 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                     glowIntensity += 0.05f;
                 else
                     glowIntensity -= 0.05f;
-                    
                 if (glowIntensity >= 1.0f) glowIncreasing = false;
                 if (glowIntensity <= 0.2f) glowIncreasing = true;
-                
                 this.Invalidate();
             };
             animationTimer.Start();
-            
-            // CPS Counter
+
             cpsTimer = new Timer();
             cpsTimer.Interval = 1000;
             cpsTimer.Tick += (s, e) => {
                 currentCPS = clickCount;
-                cpsDisplay.Text = $"📊 CPS: {currentCPS}";
+                cpsDisplay.Text = "CPS: " + currentCPS;
                 clickCount = 0;
             };
             cpsTimer.Start();
         }
-        
+
         private void Form_Paint(object sender, PaintEventArgs e)
         {
-            // Effetto glow/bagliori
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            
-            // Sfondo con gradient luminoso
+
             using (LinearGradientBrush brush = new LinearGradientBrush(
                 this.ClientRectangle,
                 Color.White,
@@ -121,8 +108,7 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
             {
                 g.FillRectangle(brush, this.ClientRectangle);
             }
-            
-            // Bagliore centrale
+
             int glowSize = (int)(200 + glowIntensity * 100);
             using (GraphicsPath path = new GraphicsPath())
             {
@@ -134,8 +120,7 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                     g.FillPath(pgb, path);
                 }
             }
-            
-            // Particelle luminose random
+
             Random rand = new Random();
             for (int i = 0; i < 15; i++)
             {
@@ -147,13 +132,12 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                 }
             }
         }
-        
+
         private void InitUI()
         {
-            // Titolo
             var title = new Label()
             {
-                Text = "🕊️ WINGS CLICKER",
+                Text = "WINGS CLICKER",
                 Font = new Font("Segoe UI", 28, FontStyle.Bold),
                 ForeColor = Color.FromArgb(100, 100, 100),
                 Location = new Point(80, 30),
@@ -161,8 +145,7 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                 TextAlign = ContentAlignment.MiddleCenter,
                 BackColor = Color.Transparent
             };
-            
-            // Sottotitolo
+
             var subtitle = new Label()
             {
                 Text = "Blatant Mode - Right Click Power",
@@ -173,17 +156,7 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                 TextAlign = ContentAlignment.MiddleCenter,
                 BackColor = Color.Transparent
             };
-            
-            // Modalità
-            modeLabel = new Label()
-            {
-                Text = "🎮 CLICK MODE:",
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
-                ForeColor = Color.FromArgb(80, 80, 80),
-                Location = new Point(50, 140),
-                Size = new Size(150, 25)
-            };
-            
+
             modeCombo = new ComboBox()
             {
                 Location = new Point(200, 138),
@@ -195,23 +168,22 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                 FlatStyle = FlatStyle.Flat
             };
             modeCombo.Items.AddRange(new string[] { 
-                "🔥 BLATANT MODE (Right Click Only)", 
-                "⚡ RAPID FIRE (Left + Right)", 
-                "🎯 SINGLE SHOT (Right Click)",
-                "💥 DOUBLE TAP (2x Right Click)"
+                "BLATANT MODE (Right Click Only)", 
+                "RAPID FIRE (Left + Right)", 
+                "SINGLE SHOT (Right Click)",
+                "DOUBLE TAP (2x Right Click)"
             });
             modeCombo.SelectedIndex = 0;
-            
-            // CPS Control
+
             var cpsLabel = new Label()
             {
-                Text = "🎯 CPS TARGET:",
+                Text = "CPS TARGET:",
                 Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 ForeColor = Color.FromArgb(80, 80, 80),
                 Location = new Point(50, 190),
                 Size = new Size(150, 25)
             };
-            
+
             cpsControl = new NumericUpDown()
             {
                 Location = new Point(200, 188),
@@ -223,17 +195,16 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                 ForeColor = Color.FromArgb(60, 60, 60),
                 Font = new Font("Segoe UI", 10)
             };
-            
-            // Intensity slider
-            intensityLabel = new Label()
+
+            var intensityLabel = new Label()
             {
-                Text = "💫 INTENSITY:",
+                Text = "INTENSITY:",
                 Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 ForeColor = Color.FromArgb(80, 80, 80),
                 Location = new Point(50, 240),
                 Size = new Size(150, 25)
             };
-            
+
             intensityBar = new TrackBar()
             {
                 Location = new Point(200, 235),
@@ -244,34 +215,10 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                 TickStyle = TickStyle.BottomRight,
                 BackColor = Color.White
             };
-            
-            // Checkbox click type
-            leftClickCheck = new CheckBox()
-            {
-                Text = "✓ Left Click",
-                Location = new Point(70, 300),
-                Size = new Size(100, 25),
-                ForeColor = Color.FromArgb(80, 80, 80),
-                Font = new Font("Segoe UI", 9),
-                Checked = false,
-                Enabled = false
-            };
-            
-            rightClickCheck = new CheckBox()
-            {
-                Text = "✓ Right Click",
-                Location = new Point(200, 300),
-                Size = new Size(100, 25),
-                ForeColor = Color.FromArgb(80, 80, 80),
-                Font = new Font("Segoe UI", 9),
-                Checked = true,
-                Enabled = false
-            };
-            
-            // CPS Display
+
             cpsDisplay = new Label()
             {
-                Text = "📊 CPS: 0",
+                Text = "CPS: 0",
                 Font = new Font("Segoe UI", 14, FontStyle.Bold),
                 ForeColor = Color.FromArgb(255, 100, 100),
                 Location = new Point(160, 340),
@@ -280,11 +227,10 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                 BackColor = Color.FromArgb(255, 240, 240),
                 BorderStyle = BorderStyle.FixedSingle
             };
-            
-            // Start/Stop Button
+
             startStopBtn = new Button()
             {
-                Text = "✨ START CLICKING ✨",
+                Text = "START CLICKING",
                 Location = new Point(100, 400),
                 Size = new Size(300, 55),
                 BackColor = Color.FromArgb(255, 200, 200),
@@ -296,78 +242,66 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
             startStopBtn.FlatAppearance.BorderSize = 2;
             startStopBtn.FlatAppearance.BorderColor = Color.FromArgb(255, 150, 150);
             startStopBtn.Click += StartStopClick;
-            
-            // Status Label
+
             statusLabel = new Label()
             {
-                Text = "⚪ STATUS: INACTIVE",
+                Text = "STATUS: INACTIVE",
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 ForeColor = Color.Gray,
                 Location = new Point(150, 480),
                 Size = new Size(200, 25),
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            
-            // Info hotkey
+
             var hotkeyInfo = new Label()
             {
-                Text = "💡 HOTKEY: F6 to Start/Stop | ESC to Exit",
+                Text = "HOTKEY: F6 to Start/Stop | ESC to Exit",
                 Font = new Font("Segoe UI", 8),
                 ForeColor = Color.FromArgb(180, 180, 180),
                 Location = new Point(100, 540),
                 Size = new Size(300, 20),
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            
+
             var creditInfo = new Label()
             {
-                Text = "© Wings Clicker - Blatant Mode Edition",
+                Text = "Wings Clicker - Blatant Mode Edition",
                 Font = new Font("Segoe UI", 7),
                 ForeColor = Color.FromArgb(200, 200, 200),
                 Location = new Point(130, 565),
                 Size = new Size(240, 20),
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            
-            this.Controls.AddRange(new Control[] { title, subtitle, modeLabel, modeCombo,
-                cpsLabel, cpsControl, intensityLabel, intensityBar, leftClickCheck, 
-                rightClickCheck, cpsDisplay, startStopBtn, statusLabel, hotkeyInfo, creditInfo });
-            
+
+            this.Controls.AddRange(new Control[] { title, subtitle, modeCombo,
+                cpsLabel, cpsControl, intensityLabel, intensityBar, 
+                cpsDisplay, startStopBtn, statusLabel, hotkeyInfo, creditInfo });
+
             this.KeyPreview = true;
             this.KeyDown += Form_KeyDown;
-            
-            // Cambiamento modalità
             modeCombo.SelectedIndexChanged += ModeChanged;
         }
-        
+
         private void ModeChanged(object sender, EventArgs e)
         {
-            if (modeCombo.SelectedIndex == 0) // Blatant Mode
+            if (modeCombo.SelectedIndex == 0)
             {
-                rightClickCheck.Checked = true;
-                leftClickCheck.Checked = false;
                 cpsControl.Value = 20;
             }
-            else if (modeCombo.SelectedIndex == 1) // Rapid Fire
+            else if (modeCombo.SelectedIndex == 1)
             {
-                rightClickCheck.Checked = true;
-                leftClickCheck.Checked = true;
                 cpsControl.Value = 30;
             }
-            else if (modeCombo.SelectedIndex == 2) // Single Shot
+            else if (modeCombo.SelectedIndex == 2)
             {
-                rightClickCheck.Checked = true;
-                leftClickCheck.Checked = false;
                 cpsControl.Value = 12;
             }
-            else if (modeCombo.SelectedIndex == 3) // Double Tap
+            else if (modeCombo.SelectedIndex == 3)
             {
-                rightClickCheck.Checked = true;
-                leftClickCheck.Checked = false;
                 cpsControl.Value = 25;
             }
         }
-        
+
         private void PerformClick(bool left, bool right)
         {
             if (left)
@@ -384,54 +318,53 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
             }
             Interlocked.Increment(ref clickCount);
         }
-        
+
         private void ClickLoop()
         {
             int delay = (int)(1000 / cpsControl.Value);
             int intensity = intensityBar.Value;
             int mode = modeCombo.SelectedIndex;
-            
+
             Random rand = new Random();
-            
+
             while (isClicking)
             {
-                if (mode == 0) // Blatant Mode - solo right click con intensità
+                if (mode == 0)
                 {
                     PerformClick(false, true);
-                    if (intensity > 7) // high intensity = double click
+                    if (intensity > 7)
                     {
                         Thread.Sleep(1);
                         PerformClick(false, true);
                     }
                 }
-                else if (mode == 1) // Rapid Fire - left + right alternati
+                else if (mode == 1)
                 {
                     PerformClick(true, false);
                     Thread.Sleep(delay / 2);
                     PerformClick(false, true);
                 }
-                else if (mode == 2) // Single Shot
+                else if (mode == 2)
                 {
                     PerformClick(false, true);
                 }
-                else if (mode == 3) // Double Tap - due click rapidi
+                else if (mode == 3)
                 {
                     PerformClick(false, true);
                     Thread.Sleep(10);
                     PerformClick(false, true);
                 }
-                
-                // Variazione casuale per sembrare più umano (ma blatant)
+
                 int variation = rand.Next(-3, 4);
                 Thread.Sleep(Math.Max(1, delay + variation));
             }
         }
-        
+
         private void StartStopClick(object sender, EventArgs e)
         {
             ToggleClicker();
         }
-        
+
         private void Form_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F6)
@@ -445,49 +378,45 @@ public class WingsClicker : Microsoft.Build.Framework.ITask
                 this.Close();
             }
         }
-        
+
         private void ToggleClicker()
         {
             isClicking = !isClicking;
-            
+
             if (isClicking)
             {
-                // Avvio
-                statusLabel.Text = "🟢 STATUS: CLICKING ACTIVE";
+                statusLabel.Text = "STATUS: CLICKING ACTIVE";
                 statusLabel.ForeColor = Color.FromArgb(0, 200, 0);
-                startStopBtn.Text = "🛑 STOP CLICKING 🛑";
+                startStopBtn.Text = "STOP CLICKING";
                 startStopBtn.BackColor = Color.FromArgb(255, 100, 100);
                 startStopBtn.ForeColor = Color.White;
                 modeCombo.Enabled = false;
                 cpsControl.Enabled = false;
                 intensityBar.Enabled = false;
-                
+
                 clickThread = new Thread(ClickLoop);
                 clickThread.IsBackground = true;
                 clickThread.Start();
-                
-                // Effetto glow animato più intenso
                 glowIntensity = 0.8f;
             }
             else
             {
-                // Stop
-                statusLabel.Text = "🔴 STATUS: INACTIVE";
+                statusLabel.Text = "STATUS: INACTIVE";
                 statusLabel.ForeColor = Color.Gray;
-                startStopBtn.Text = "✨ START CLICKING ✨";
+                startStopBtn.Text = "START CLICKING";
                 startStopBtn.BackColor = Color.FromArgb(255, 200, 200);
                 startStopBtn.ForeColor = Color.FromArgb(100, 50, 50);
                 modeCombo.Enabled = true;
                 cpsControl.Enabled = true;
                 intensityBar.Enabled = true;
-                
+
                 if (clickThread != null && clickThread.IsAlive)
                 {
                     clickThread.Join(100);
                 }
             }
         }
-        
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             isClicking = false;
